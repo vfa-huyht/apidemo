@@ -41,6 +41,24 @@ exports.signup = (req, res) => {
 };
 
 exports.signin = (req, res) => {
+  if (!req.body.username) {
+    return res.status(400).send({
+      errorCode: "INVALID_INPUT_DATA",
+      message: "There are validation errors: username - username cannot be null. ",
+      invalidFields: {
+        username: "Invalid username"
+      }
+    });
+  }
+  if (!req.body.password) {
+    return res.status(400).send({
+      errorCode: "INVALID_INPUT_DATA",
+      message: "There are validation errors: password - Required. ",
+      invalidFields: {
+        password: "Invalid password"
+      }
+    });
+  }
   User.findOne({
     where: {
       username: req.body.username
@@ -48,7 +66,10 @@ exports.signin = (req, res) => {
   })
     .then(user => {
       if (!user) {
-        return res.status(404).send({ message: "User Not found." });
+        return res.status(400).send({
+          errorCode: "WRONG_USER",
+          message: "Could not found user",
+        });
       }
 
       var passwordIsValid = bcrypt.compareSync(
@@ -57,9 +78,9 @@ exports.signin = (req, res) => {
       );
 
       if (!passwordIsValid) {
-        return res.status(401).send({
-          accessToken: null,
-          message: "Invalid Password!"
+        return res.status(400).send({
+          errorCode: "WRONG_USER",
+          message: "Could not found user",
         });
       }
 
@@ -73,11 +94,15 @@ exports.signin = (req, res) => {
           authorities.push("ROLE_" + roles[i].name.toUpperCase());
         }
         res.status(200).send({
-          id: user.id,
-          username: user.username,
-          email: user.email,
-          roles: authorities,
-          accessToken: token
+          statusCode: 200,
+          message: "Success",
+          data: {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            roles: authorities,
+            accessToken: token
+          }
         });
       });
     })
