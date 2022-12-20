@@ -11,7 +11,8 @@ checkDuplicateUsernameOrEmail = (req, res, next) => {
   }).then(user => {
     if (user) {
       res.status(400).send({
-        message: "Failed! Username is already in use!"
+        errorCode: "INVALID_INPUT_DATA",
+        message: "Username is already in use",
       });
       return;
     }
@@ -24,11 +25,11 @@ checkDuplicateUsernameOrEmail = (req, res, next) => {
     }).then(user => {
       if (user) {
         res.status(400).send({
-          message: "Failed! Email is already in use!"
+          errorCode: "INVALID_INPUT_DATA",
+          message: "Email is already in use",
         });
         return;
       }
-
       next();
     });
   });
@@ -45,7 +46,7 @@ checkRolesExisted = (req, res, next) => {
       }
     }
   }
-  
+
   next();
 };
 

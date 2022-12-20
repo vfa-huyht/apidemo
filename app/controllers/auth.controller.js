@@ -9,6 +9,33 @@ var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 
 exports.signup = (req, res) => {
+  if (!req.body.username) {
+    return res.status(400).send({
+      errorCode: "INVALID_INPUT_DATA",
+      message: "There are validation errors: username - username cannot be null. ",
+      invalidFields: {
+        username: "Invalid username"
+      }
+    });
+  }
+  if (!req.body.email) {
+    return res.status(400).send({
+      errorCode: "INVALID_INPUT_DATA",
+      message: "There are validation errors: email - email cannot be null. ",
+      invalidFields: {
+        username: "Invalid email"
+      }
+    });
+  }
+  if (!req.body.password) {
+    return res.status(400).send({
+      errorCode: "INVALID_INPUT_DATA",
+      message: "There are validation errors: password - password cannot be null. ",
+      invalidFields: {
+        username: "Invalid password"
+      }
+    });
+  }
   // Save User to Database
   User.create({
     username: req.body.username,
@@ -25,13 +52,19 @@ exports.signup = (req, res) => {
           }
         }).then(roles => {
           user.setRoles(roles).then(() => {
-            res.send({ message: "User was registered successfully!" });
+            res.status(200).send({
+              statusCode: 200,
+              message: "User was registered successfully!"
+            });
           });
         });
       } else {
         // user role = 1
         user.setRoles([1]).then(() => {
-          res.send({ message: "User was registered successfully!" });
+          res.status(200).send({
+            statusCode: 200,
+            message: "User was registered successfully!"
+          });
         });
       }
     })
